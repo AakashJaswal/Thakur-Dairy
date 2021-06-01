@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Farm App
+
+Parameters:
+  Service:
+    Description: Name
+    Type: String
+    Default: ms-farm-app
+
+Globals:
+  Function:
+    Runtime: python3.8
+    Timeout: 30
+    CodeUri: src/
+#    Environemnt:
+#      Variables:
+
+Resources:
+  FarmAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      EndpointConfiguration: REGIONAL
+      Name: !Sub "${Service}-api"
+      StageName: test
+
+  AddUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${Service}-addUser"
+      Handler: add_account.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UserTable
+      Events:
+        add:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FarmAPI
+            Path: /add-user
+            Method: POST
+
+  EditUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${Service}-editUser"
+      Handler: edit_account.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UserTable
+      Events:
+        edit:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FarmAPI
+            Path: /edit-user
+            Method: POST
+
+  ViewDetail:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${Service}-viewDetail"
+      Handler: view_details.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UserTable
+      Events:
+        FarmAPI:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FarmAPI
+            Path: /view-detail/{phone_no}
+            Method: GET
+        getUserByName:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FarmAPI
+            Path: /view-detail/name/{prefix}
+            Method: GET
+
+  AddMilk:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${Service}-addMilk"
+      Handler: milk_counter.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UserTable
+      Events:
+        add:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FarmAPI
+            Path: /add-milk
+            Method: POST
+
+  UserTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "PhoneNo"
+          AttributeType: "S"
+        - AttributeName: "cache"
+          AttributeType: "S"
+        # - AttributeName: "Address"
+        #   AttributeType: "S"
+        # - AttributeName: "Landmark"
+        #   AttributeType: "S"
+      KeySchema:
+        - AttributeName: "PhoneNo"
+          KeyType: "HASH"
+        - AttributeName: "cache"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: "user"
+
+
+
+Outputs:
+  FarmURL:
+    Value: !Sub 'https://${FarmAPI}.execute-api.${AWS::Region}.amazonaws.com/test'
+    Export:
+      Name: 'FarmURL'
