@@ -23,7 +23,7 @@ def search_by_num(phone_no):
 
 def search_by_name(prefix):
     scan_kwargs = {
-        'FilterExpression': Key('Name').begins_with(prefix),
+        'FilterExpression': Key('FirstName').begins_with(prefix),
     }
     try:
         response_list = []
