@@ -64,6 +64,10 @@ Resources:
             RestApiId: !Ref FarmAPI
             Path: /add-user
             Method: POST
+            RequestModel:
+              Model: AddUser
+              Required: true
+
 
   EditUser:
     Type: AWS::Serverless::Function
