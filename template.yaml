@@ -23,6 +23,31 @@ Resources:
       EndpointConfiguration: REGIONAL
       Name: !Sub "${Service}-api"
       StageName: test
+      Models:
+        AddUser:
+          type: object
+          required:
+            - PhoneNo
+            - FirstName
+            - LastName
+            - Address
+            - Landmark
+            - PlusCode
+          properties:
+            PhoneNo:
+              type: string
+              minLength: 9
+              maxLength: 9
+            FirstName:
+              type: string
+            LastName:
+              type: string
+            Address:
+              type: string
+            Landmark:
+              type: string
+            PlusCode:
+              type: string
 
   AddUser:
     Type: AWS::Serverless::Function
