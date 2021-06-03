@@ -6,7 +6,9 @@ import json
 
 def edit_user(data):
     phone_no = data.get('PhoneNo')
-    new_data = ''
+    data['FirstName'] = data['FirstName'].lower()
+    data['LastName'] = data['LastName'].lower()
+    new_data = {}
     try:
         response = user_table.query(
             KeyConditionExpression=Key('PhoneNo').eq(phone_no)
@@ -19,13 +21,12 @@ def edit_user(data):
     if response['Count'] != 0:
         old_data = {
             'PhoneNo': response['Items'][0].get('PhoneNo'),
-            'FirstName': str(data.get('FirstName')).lower(),
-            'LastName': str(data.get('LastName')).lower(),
+            'FirstName': response['Items'][0].get('FirstName'),
+            'LastName': response['Items'][0].get('LastName'),
             'Address': response['Items'][0].get('Address'),
             'Landmark': response['Items'][0].get('Landmark'),
-            'PlusCode': (response['Items'][0].get('PlusCode', ''))
+            'PlusCode': response['Items'][0].get('PlusCode', '')
         }
-        new_data = dict(old_data)
     else:
         return {'status_code': 401, 'message': {'Response': f"User don't exist with phone number: {phone_no}"}}
     new_data.update(data)
