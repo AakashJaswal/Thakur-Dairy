@@ -14,8 +14,9 @@ def search_by_num(phone_no):
         return {'status_code': 500, 'message': {'Response': 'Please reach out to Support'}}
 
     if response['Count'] != 0:
-        user_data = [response['Items'][0]]
-        resp = {'status_code': 200, 'message': user_data}
+        user_data = response['Items'][0]
+        del user_data['cache']
+        resp = {'status_code': 200, 'message': [user_data]}
     else:
         resp = {'status_code': 401, 'message': {'Response': f"User don't exist with phone number: {phone_no}"}}
     return resp
@@ -40,7 +41,8 @@ def search_by_name(prefix):
     except botocore.exceptions.ClientError as e:
         print(e.response)
         return {'status_code': 500, 'message': {'Response': 'Please reach out to Support'}}
-
+    for item in response_list:
+        del item['cache']
     if response_list:
         resp = {'status_code': 200, 'message': response_list}
     else:

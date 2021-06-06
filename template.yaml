@@ -123,6 +123,21 @@ Resources:
             Path: /add-milk
             Method: POST
 
+  AddToUnassigned:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${Service}-dynamo-stream-unassigned"
+      Handler: add_to_unassigned.lambda_handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref UserTable
+      Events:
+        DynamoDB:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt UserTable.StreamArn
+            StartingPosition: TRIM_HORIZON
+
   UserTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -143,6 +158,8 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
+      StreamSpecification:
+         StreamViewType: NEW_IMAGE
       TableName: "user"
 
 
