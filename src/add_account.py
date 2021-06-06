@@ -12,7 +12,7 @@ def add_user(data):
         'Landmark': data.get('Landmark'),
         'PlusCode': data.get('PlusCode', '')
     }
-    params.update({'cache':'account'})
+    params.update({'cache': 'account'})
     try:
         response = user_table.put_item(
             TableName=table_name,

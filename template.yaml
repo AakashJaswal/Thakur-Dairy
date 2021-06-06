@@ -24,7 +24,7 @@ Resources:
       Name: !Sub "${Service}-api"
       StageName: test
       Models:
-        AddUser:
+        adduser:
           type: object
           required:
             - PhoneNo
@@ -65,7 +65,7 @@ Resources:
             Path: /add-user
             Method: POST
             RequestModel:
-              Model: AddUser
+              Model: adduser
               Required: true
 
 
