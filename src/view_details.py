@@ -61,5 +61,4 @@ def lambda_handler(event, context):
     else:
         phone_no = event['pathParameters']['phone_no']
         resp = search_by_num(phone_no)
-    print(resp)
     return render_response(resp)
